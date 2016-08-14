@@ -52,7 +52,8 @@ class ProcessUtilsTests(unittest.TestCase):
                 "    sys.stdout.write(s)",
                 "    sys.stdout.flush()"])
         d = utils.getProcessOutput(self.exe, ['-u', scriptFile])
-        return d.addCallback(self.assertEqual, b"hello world\n")
+        return d.addCallback(self.assertEqual, b"hello world" +
+                                               os.linesep.encode("ascii"))
 
 
     def test_outputWithErrorIgnored(self):
@@ -120,8 +121,9 @@ class ProcessUtilsTests(unittest.TestCase):
 
         def gotOutputAndValue(out_err_code):
             out, err, code = out_err_code
-            self.assertEqual(out, b"hello world!\n")
-            self.assertEqual(err, b"goodbye world!" + os.linesep.encode("ascii"))
+            self.assertEqual(out, b"hello world!" + os.linesep.encode("ascii"))
+            self.assertEqual(err, b"goodbye world!" +
+                                  os.linesep.encode("ascii"))
             self.assertEqual(code, 1)
         d = utils.getProcessOutputAndValue(self.exe, ["-u", scriptFile])
         return d.addCallback(gotOutputAndValue)
